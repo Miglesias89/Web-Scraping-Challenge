@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 mongo = PyMongo(app, uri ="mongodb://localhost:27017/scrape_mars")
 
-mars_data = scrape()
+#mars_data = scrape()
 
 @app.route("/")
 def home():
@@ -17,7 +17,9 @@ def home():
 def scrape_mars():
 
     mars_data = mongo.db.collection
-    data = scrape_mars.scrape()
+    #print('made it after scrape')
+    data = scrape()
+    print(data)
     mars_data.update(
         {},
         data,

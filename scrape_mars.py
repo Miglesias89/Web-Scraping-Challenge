@@ -55,7 +55,7 @@ def scrape():
 
     text_weather = re.compile(r'sol')
     mars_weather = soup.find('span', text=text_weather)
-    print(mars_weather.text)
+    #print(mars_weather.text)
 
 
 # Mars Facts
@@ -114,7 +114,9 @@ def scrape():
         
         hemisphere_image_urls.append(image_dict)
 
+    #print("before quit")
     browser.quit()
+    #print("after quit")
 
 #Mars Dictionary
 
