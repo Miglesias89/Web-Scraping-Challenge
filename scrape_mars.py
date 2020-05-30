@@ -72,51 +72,48 @@ def scrape():
 
     mars_facts = soup.find('table', id = "tablepress-p-mars-no-2")
 
-    facts_table = str(mars_facts)
-
-    mars_table = pd.read_html(facts_table)
-
-    mars_table_df = mars_table[0]
+    mars_table = pd.read_html(url)[0]
+    mars_table_df = mars_table
     mars_table_df.columns = ["Description", "Values"]
-    mars_table_df
+    #mars_table_df
+
+    table = mars_table_df.to_html(classes="table table-striped")
+    
 
 # Mars Hemispheres
 
     url = "https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars"
     browser.visit(url)
 
-    time.sleep(3)
-
     html = browser.html
     soup = BeautifulSoup(html, 'html.parser')
 
-    hemisphere_image_urls = []
+    items = soup.find_all('div', class_= 'item')
 
-    response = soup.find_all('div', class_="item")
+    hemisphere_image_url = []
 
-    base_url = "https://astropedia.astrogeology.usgs.gov/download/Mars/Viking/"
+    hemisphere_main_url = 'https://astrogeology.usgs.gov'
 
-    for image in response: 
-        hp_image = image.find('a', class_= "product-item").find('img', class_="thumb")
+    for item in items:
         
-        hp_image = str(hp_image)
+        title = item.find('h3').text
         
-        hp_image = hp_image.split("_",1)
+        partial_img_url = item.find('a', class_= 'itemLink product-item')['href']
         
-        hp_image = hp_image[1].split('_thumb.png"/>')
+        browser.visit(hemisphere_main_url + partial_img_url)
         
-        image_url = base_url + hp_image[0] + '/full.jpg'
-            
-        image_title = image.find('div', class_="description").find('a', class_ = "product-item").find('h3').text
+        partial_img_html = browser.html
         
-        image_dict = {'title': image_title,
-                    'img_url': image_url}
+        soup = BeautifulSoup (partial_img_html, 'html.parser')
         
-        hemisphere_image_urls.append(image_dict)
+        img_url = hemisphere_main_url + soup.find('img', class_='wide-image')['src']
+        
+        hemisphere_image_url.append({"title": title, "img_url": img_url})
+        
+    hemisphere_image_url
 
-    #print("before quit")
+
     browser.quit()
-    #print("after quit")
 
 #Mars Dictionary
 
@@ -124,9 +121,9 @@ def scrape():
         "news_title": news_title,
         "news_p": news_p,
         "featured_image": featured_image,
-        "mars_weather": mars_weather,
-        "mars_table" : mars_table_df,
-        "hemisphere" : image_dict
+        "mars_weather": mars_weather.text,
+        "mars_table" : table,
+        "hemisphere" : hemisphere_image_url
 
     }
 

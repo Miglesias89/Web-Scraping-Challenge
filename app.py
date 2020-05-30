@@ -20,7 +20,7 @@ def scrape_mars():
     #print('made it after scrape')
     data = scrape()
     print(data)
-    mars_data.update(
+    mars_data.replace_one(
         {},
         data,
         upsert = True
