@@ -10,15 +10,19 @@ mars_data = scrape()
 
 @app.route("/")
 def home():
-    destination_data = mongo.db.collection.find_one()
-    return render_template("index.html", mars_data = mars_data, ds_data=destination_data)
+    mars_data = mongo.db.collection.find_one()
+    return render_template("index.html", mars_data = mars_data)
 
 @app.route("/scrape")
 def scrape_mars():
 
-    mars_data = scrape()
-
-    mongo.db.collection.update({}, mars_data, upsert = True)
+    mars_data = mongo.db.collection
+    data = scrape_mars.scrape()
+    mars_data.update(
+        {},
+        data,
+        upsert = True
+    )
 
     return redirect("/")
 
